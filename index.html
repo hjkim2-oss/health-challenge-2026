@@ -688,7 +688,7 @@
 // =====================================================
 // ▼▼▼ Google Apps Script 웹 앱 배포 URL을 입력하세요 ▼▼▼
 // =====================================================
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwf-Cma1p940yoRbDcBZuv_65h73wqDtneyN5LJbyTYIA2suC8JTWSFD-qKSI1atu8p0Q/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwSRo7_PzT7HLKpg0TaM_54Cc9hqNNFn1JuNY2_p9WCHUgyQcVUUBXf-5AyIEnGnSsu3Q/exec';
 // =====================================================
 
 /* ── 공유 상태 ─────────────────────────────────────── */
@@ -814,43 +814,14 @@ function toBase64(file) {
   });
 }
 
-/* ── iframe 제출 (CORS/redirect 문제 우회) ────────── */
+/* ── fetch no-cors 제출 ────────────────────────────── */
 function submitViaIframe(payload) {
-  return new Promise((resolve, reject) => {
-    const uid = 'gas_' + Date.now();
-
-    const iframe = document.createElement('iframe');
-    iframe.name = uid;
-    iframe.style.cssText = 'display:none;position:absolute;width:0;height:0;';
-    document.body.appendChild(iframe);
-
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = GAS_URL;
-    form.target = uid;
-    form.style.cssText = 'display:none;position:absolute;';
-
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'payload';
-    input.value = JSON.stringify(payload);
-    form.appendChild(input);
-    document.body.appendChild(form);
-
-    const cleanup = () => {
-      try { document.body.removeChild(iframe); } catch(e) {}
-      try { document.body.removeChild(form);   } catch(e) {}
-    };
-
-    // iframe 로드 완료 = GAS 응답 도착
-    iframe.addEventListener('load', () => { cleanup(); resolve(); }, { once: true });
-
-    // 10초 안에 응답 없으면 성공으로 간주
-    const timer = setTimeout(() => { cleanup(); resolve(); }, 10000);
-
-    iframe.addEventListener('load', () => clearTimeout(timer), { once: true });
-
-    form.submit();
+  const body = new URLSearchParams({ payload: JSON.stringify(payload) });
+  return fetch(GAS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString()
   });
 }
 
