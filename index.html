@@ -576,10 +576,10 @@
           인증샷 업로드 <span class="req"></span>
         </div>
         <div class="upload-zone" id="uz2">
-          <input type="file" id="uf2" accept="image/*" capture="environment">
+          <input type="file" id="uf2" accept="image/*">
           <div class="upload-ico">📷</div>
           <div class="upload-lbl">사진을 클릭하거나 드래그해서 업로드</div>
-          <div class="upload-hint">JPG · PNG · HEIC / 최대 10MB</div>
+          <div class="upload-hint">JPG · PNG · HEIC / 최대 20MB</div>
         </div>
         <div class="preview-wrap" id="pw2">
           <img id="pi2" src="" alt="미리보기">
@@ -644,10 +644,10 @@
           3인 이상 팀 인증샷 업로드 <span class="req"></span>
         </div>
         <div class="upload-zone" id="uz3">
-          <input type="file" id="uf3" accept="image/*" capture="environment">
+          <input type="file" id="uf3" accept="image/*">
           <div class="upload-ico">📷</div>
           <div class="upload-lbl">사진을 클릭하거나 드래그해서 업로드</div>
-          <div class="upload-hint">JPG · PNG · HEIC / 최대 10MB</div>
+          <div class="upload-hint">JPG · PNG · HEIC / 최대 20MB</div>
         </div>
         <div class="preview-wrap" id="pw3">
           <img id="pi3" src="" alt="미리보기">
@@ -763,7 +763,7 @@ function bindUpload({ zoneId, fileId, pwId, piId, rbId, teamMode, onFile }) {
   });
 
   function handle(file) {
-    if (file.size > 10*1024*1024) { alert('파일 크기가 10MB를 초과합니다.'); return; }
+    if (file.size > 20*1024*1024) { alert('파일 크기가 20MB를 초과합니다.'); return; }
     const reader = new FileReader();
     reader.onload = ev => {
       pi.src = ev.target.result;
