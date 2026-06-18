@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>건강 챌린지 인증 제출</title>
+  <style>
+    :root {
+      --primary:        #2563EB;
+      --primary-dark:   #1D4ED8;
+      --primary-light:  #EFF6FF;
+      --primary-border: #BFDBFE;
+      --team-color:     #0891B2;
+      --team-dark:      #0E7490;
+      --team-light:     #ECFEFF;
+      --warn-bg:        #FFFBEB;
+      --warn-border:    #F59E0B;
+      --warn-text:      #92400E;
+      --info-bg:        #EFF6FF;
+      --info-text:      #1E3A8A;
+      --hint-bg:        #F8FAFC;
+      --hint-border:    #CBD5E1;
+      --hint-text:      #64748B;
+      --bg:             #F1F5F9;
+      --card:           #FFFFFF;
+      --text:           #0F172A;
+      --text-sub:       #475569;
+      --text-muted:     #94A3B8;
+      --border:         #E2E8F0;
+      --radius:         14px;
+      --radius-sm:      10px;
+      --shadow:         0 4px 32px rgba(0,0,0,0.09);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── HEADER ─────────────────────────────── */
+    .site-header {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .header-inner {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 20px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--primary), #7C3AED);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+    }
+    .brand-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .header-badge {
+      font-size: 12px; font-weight: 600;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* ── MAIN ───────────────────────────────── */
+    .main { max-width: 600px; margin: 0 auto; padding: 28px 20px 64px; }
+
+    /* ── STEP BAR ───────────────────────────── */
+    .step-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .step-item {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .step-circle {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--card);
+      color: var(--text-muted);
+      font-size: 13px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.25s;
+    }
+    .step-label {
+      font-size: 13px; font-weight: 500;
+      color: var(--text-muted);
+      transition: all 0.25s;
+    }
+    .step-item.active .step-circle {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .step-item.active .step-label { color: var(--primary); font-weight: 600; }
+    .step-item.done .step-circle {
+      background: #DCFCE7; border-color: #22C55E; color: #16A34A;
+    }
+    .step-item.done .step-label { color: #16A34A; }
+    .step-connector {
+      flex: 1; height: 2px; background: var(--border);
+      margin: 0 10px; max-width: 80px;
+      transition: background 0.25s;
+    }
+    .step-connector.done { background: #22C55E; }
+
+    /* ── CARD ───────────────────────────────── */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: fadeUp 0.28s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .card-top {
+      padding: 7px 24px;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.09em; text-transform: uppercase;
+      color: #fff;
+    }
+    .card-top.step1  { background: linear-gradient(90deg, var(--primary), #6366F1); }
+    .card-top.step2  { background: linear-gradient(90deg, var(--primary), #0891B2); }
+    .card-top.step3  { background: linear-gradient(90deg, var(--team-color), #0284C7); }
+    .card-body { padding: 28px 30px 32px; }
+
+    .card-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+    .card-desc  { font-size: 14px; color: var(--text-sub); margin-bottom: 26px; }
+
+    /* ── NOTICE BOX ─────────────────────────── */
+    .notice {
+      display: flex; gap: 12px;
+      padding: 13px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px; line-height: 1.65;
+      margin-bottom: 22px;
+    }
+    .notice-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+    .notice.warn {
+      background: var(--warn-bg);
+      border: 1px solid #FDE68A;
+      border-left: 4px solid var(--warn-border);
+      color: var(--warn-text);
+    }
+    .notice.info {
+      background: var(--info-bg);
+      border: 1px solid var(--primary-border);
+      border-left: 4px solid var(--primary);
+      color: var(--info-text);
+    }
+    .notice.hint {
+      background: var(--hint-bg);
+      border: 1px solid var(--hint-border);
+      border-left: 3px solid #94A3B8;
+      color: var(--hint-text);
+      font-size: 13px;
+      margin-top: 10px; margin-bottom: 0;
+    }
+    .notice strong { font-weight: 700; }
+
+    /* ── FORM GROUP ─────────────────────────── */
+    .fg { margin-bottom: 22px; }
+    .fg:last-of-type { margin-bottom: 0; }
+
+    .fg-label {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 14px; font-weight: 600; color: var(--text);
+      margin-bottom: 10px;
+    }
+    .q-badge {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--primary-light); color: var(--primary);
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .q-badge.team-badge { background: var(--team-light); color: var(--team-color); }
+    .req { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #EF4444; vertical-align: middle; margin-left: 1px; }
+
+    /* Text input */
+    .f-input {
+      width: 100%; padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 15px; color: var(--text);
+      background: #FAFBFC; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .f-input::placeholder { color: var(--text-muted); }
+    .f-input:focus {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    /* Select */
+    .sel-wrap { position: relative; }
+    .f-select {
+      width: 100%; padding: 12px 40px 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 15px; color: var(--text);
+      background: #FAFBFC; outline: none;
+      appearance: none; -webkit-appearance: none;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .f-select:focus {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .sel-arrow {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none; color: var(--text-muted);
+    }
+
+    /* Radio option card */
+    .radio-list { display: flex; flex-direction: column; gap: 8px; }
+    .radio-card {
+      display: flex; align-items: center; gap: 13px;
+      padding: 13px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.14s;
+      user-select: none;
+    }
+    .radio-card:hover { border-color: #93C5FD; background: #F8FAFF; }
+    .radio-card.sel {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .radio-card.sel-team {
+      border-color: var(--team-color);
+      background: var(--team-light);
+    }
+    .radio-card input[type="radio"] { display: none; }
+    .radio-ring {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid var(--border); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.14s;
+    }
+    .radio-card.sel .radio-ring { border-color: var(--primary); }
+    .radio-card.sel-team .radio-ring { border-color: var(--team-color); }
+    .radio-ring::after {
+      content: ''; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--primary);
+      opacity: 0; transform: scale(0);
+      transition: all 0.14s;
+    }
+    .radio-card.sel .radio-ring::after,
+    .radio-card.sel-team .radio-ring::after { opacity: 1; transform: scale(1); }
+    .radio-card.sel-team .radio-ring::after { background: var(--team-color); }
+
+    .radio-text { flex: 1; }
+    .radio-main { font-size: 15px; font-weight: 600; color: var(--text); }
+    .radio-sub  { font-size: 13px; color: var(--text-sub); margin-top: 1px; }
+    .route-tag {
+      font-size: 11px; font-weight: 700;
+      padding: 3px 8px; border-radius: 20px;
+      background: #E0E7FF; color: #3730A3;
+      white-space: nowrap; flex-shrink: 0;
+      transition: all 0.14s;
+    }
+    .radio-card.sel .route-tag { background: var(--primary); color: #fff; }
+    .radio-card.sel-team .route-tag { background: var(--team-color); color: #fff; }
+
+    /* File upload zone */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-sm);
+      padding: 28px 20px; text-align: center;
+      cursor: pointer; position: relative;
+      background: #FAFBFC;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .upload-zone input[type="file"] {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      opacity: 0; cursor: pointer;
+    }
+    .upload-zone:hover, .upload-zone.over {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .upload-zone.over-team { border-color: var(--team-color); background: var(--team-light); }
+    .upload-ico   { font-size: 30px; margin-bottom: 7px; }
+    .upload-lbl   { font-size: 14px; font-weight: 500; color: var(--text-sub); }
+    .upload-hint  { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+    .preview-wrap { display: none; margin-top: 10px; position: relative; }
+    .preview-wrap img {
+      width: 100%; max-height: 200px; object-fit: cover;
+      border-radius: var(--radius-sm); display: block;
+    }
+    .rm-btn {
+      position: absolute; top: 8px; right: 8px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(0,0,0,0.55); color: #fff;
+      border: none; font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .rm-btn:hover { background: rgba(0,0,0,0.75); }
+
+    /* ── DIVIDER ────────────────────────────── */
+    .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+    /* ── BUTTON ROW ─────────────────────────── */
+    .btn-row { display: flex; gap: 10px; margin-top: 26px; }
+    .btn {
+      padding: 13px 22px; border-radius: var(--radius-sm);
+      font-size: 15px; font-weight: 600;
+      cursor: pointer; border: none;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.15s;
+    }
+    .btn-primary {
+      background: var(--primary); color: #fff; flex: 1;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-primary:active:not(:disabled) { transform: scale(0.985); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-team-submit {
+      background: var(--team-color); color: #fff; flex: 1;
+    }
+    .btn-team-submit:hover:not(:disabled) { background: var(--team-dark); }
+    .btn-team-submit:active:not(:disabled) { transform: scale(0.985); }
+    .btn-team-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-back {
+      background: var(--card); color: var(--text-sub);
+      border: 1.5px solid var(--border);
+      padding: 13px 18px;
+    }
+    .btn-back:hover { background: var(--bg); }
+
+    .spinner {
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── ERROR BOX ──────────────────────────── */
+    .err-box {
+      display: none;
+      margin-top: 14px; padding: 13px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 500; text-align: center;
+      background: #FEF2F2; border: 1px solid #FECACA; color: #DC2626;
+    }
+
+    /* ── SUCCESS SCREEN ─────────────────────── */
+    .success-wrap {
+      padding: 32px 30px 36px;
+      text-align: center;
+    }
+    .success-icon {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: #DCFCE7;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; margin: 0 auto 20px;
+    }
+    .success-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .success-desc  {
+      font-size: 14px; color: var(--text-sub);
+      line-height: 1.7; margin-bottom: 22px;
+    }
+    .summary {
+      background: var(--bg); border-radius: var(--radius-sm);
+      padding: 16px 20px; text-align: left; margin-bottom: 22px;
+    }
+    .summary-row { display: flex; gap: 8px; padding: 4px 0; font-size: 14px; }
+    .s-key { color: var(--text-muted); width: 78px; flex-shrink: 0; }
+    .s-val { color: var(--text); font-weight: 600; }
+
+    /* ── RESPONSIVE ─────────────────────────── */
+    @media (max-width: 520px) {
+      .card-body { padding: 22px 18px 26px; }
+      .card-title { font-size: 18px; }
+      .main { padding: 20px 14px 52px; }
+      .btn-row { flex-direction: column-reverse; }
+      .btn-back { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ──────────────────────────────────── -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-icon">🏃</div>
+      <span class="brand-name">2026년 상반기 건강프로그램</span>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <a href="index.html" style="display:inline-flex; align-items:center; gap:5px; padding:7px 13px; border-radius:9px; font-size:13px; font-weight:600; text-decoration:none; color:#fff; background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.28);">← 순위 대시보드</a>
+      <span class="header-badge">인증 제출</span>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- Step Bar -->
+  <div class="step-bar" id="stepBar">
+    <div class="step-item active" id="si1">
+      <div class="step-circle" id="sc1">1</div>
+      <div class="step-label">기본 정보</div>
+    </div>
+    <div class="step-connector" id="sconn"></div>
+    <div class="step-item" id="si2">
+      <div class="step-circle">2</div>
+      <div class="step-label" id="sl2">인증 제출</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 1 · 공통 정보 입력
+  ═══════════════════════════════════════════ -->
+  <div class="card" id="sec1">
+    <div class="card-top step1">STEP 1 &nbsp;·&nbsp; 기본 정보 입력</div>
+    <div class="card-body">
+      <h2 class="card-title">공통 정보를 입력해 주세요</h2>
+      <p class="card-desc">선택하신 인증 종류에 따라 다음 단계로 이동합니다.</p>
+
+      <!-- Q1. 이름 -->
+      <div class="fg">
+        <div class="fg-label">
+          <span class="q-badge">1</span>
+          이름 <span class="req"></span>
+        </div>
+        <input class="f-input" type="text" id="f-name" placeholder="이름을 입력하세요" autocomplete="name">
+      </div>
+
+      <!-- Q2. 사번 -->
+      <div class="fg">
+        <div class="fg-label">
+          <span class="q-badge">2</span>
+          사번 <span class="req"></span>
+        </div>
+        <input class="f-input" type="text" id="f-empid" placeholder="사번을 입력하세요" inputmode="numeric">
+      </div>
+
+      <!-- Q3. 소속 팀 -->
+      <div class="fg">
+        <div class="fg-label">
+          <span class="q-badge">3</span>
+          소속 팀 <span class="req"></span>
+        </div>
+        <div class="sel-wrap">
+          <select class="f-select" id="f-myteam">
+            <option value="">-- 팀을 선택하세요 --</option>
+            <option>1팀</option><option>2팀</option><option>3팀</option>
+            <option>4팀</option><option>5팀</option><option>6팀</option>
+            <option>7팀</option><option>8팀</option><option>9팀</option>
+            <option>10팀</option>
+            <option>K231 1팀</option><option>K231 2팀</option><option>K231 3팀</option>
+          </select>
+          <svg class="sel-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+
+      <!-- Q4. 인증 종류 -->
+      <div class="fg">
+        <div class="fg-label">
+          <span class="q-badge">4</span>
+          어떤 인증을 등록하시나요? <span class="req"></span>
+        </div>
+        <div class="radio-list">
+
+          <label class="radio-card" id="rc-personal">
+            <input type="radio" name="certtype" value="개인 인증">
+            <div class="radio-ring"></div>
+            <div class="radio-text">
+              <div class="radio-main">개인 인증 (식단/운동)</div>
+              <div class="radio-sub">혼자 하는 식단 또는 운동 인증</div>
+            </div>
+            <span class="route-tag"></span>
+          </label>
+
+          <label class="radio-card" id="rc-team">
+            <input type="radio" name="certtype" value="팀 인증">
+            <div class="radio-ring"></div>
+            <div class="radio-text">
+              <div class="radio-main">팀 인증 (3인 이상 모임)</div>
+              <div class="radio-sub">3인 이상이 함께한 팀 활동 인증</div>
+            </div>
+            <span class="route-tag"></span>
+          </label>
+
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-next">
+          다음
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+      <div class="err-box" id="err1"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 2 · 개인 인증
+  ═══════════════════════════════════════════ -->
+  <div class="card" id="sec2" style="display:none">
+    <div class="card-top step2">STEP 2 &nbsp;·&nbsp; 개인 인증</div>
+    <div class="card-body">
+      <h2 class="card-title">개인 인증</h2>
+
+      <div class="notice warn">
+        <span class="notice-icon">⚠️</span>
+        <div>
+          <strong>개인 인증은 1일 최대 2회까지 제출 가능하며, 동일항목 제출은 불가합니다.</strong><br>
+          (식단 1회 + 운동 1회 조합만 인정)
+        </div>
+      </div>
+
+      <!-- Q5. 인증 항목 -->
+      <div class="fg">
+        <div class="fg-label">
+          <span class="q-badge">5</span>
+          인증 항목 선택 <span class="req"></span>
+        </div>
+        <div class="radio-list">
+
+          <label class="radio-card" id="rc-diet">
+            <input type="radio" name="certitem" value="식단 인증">
+            <div class="radio-ring"></div>
+            <div class="radio-text">
+              <div class="radio-main">🥗 식단 인증</div>
+            </div>
+          </label>
+
+          <label class="radio-card" id="rc-exercise">
+            <input type="radio" name="certitem" value="운동 인증">
+            <div class="radio-ring"></div>
+            <div class="radio-text">
+              <div class="radio-main">💪 운동 인증</div>
+            </div>
+          </label>
+
+        </div>
+      </div>
+
+      <!-- Q6. 인증샷 업로드 -->
+      <div class="fg">
+        <div class="fg-label">
+          <span class="q-badge">6</span>
+          인증샷 업로드 <span class="req"></span>
+        </div>
+        <div class="upload-zone" id="uz2">
+          <input type="file" id="uf2" accept="image/*">
+          <div class="upload-ico">📷</div>
+          <div class="upload-lbl">사진을 클릭하거나 드래그해서 업로드</div>
+          <div class="upload-hint">JPG · PNG · HEIC / 최대 20MB</div>
+        </div>
+        <div class="preview-wrap" id="pw2">
+          <img id="pi2" src="" alt="미리보기">
+          <button type="button" class="rm-btn" id="rb2">✕</button>
+        </div>
+        <div class="notice hint">
+          <span class="notice-icon">📸</span>
+          <span>모든 인증샷은 당일 촬영한 <strong>타임스탬프 사진(날짜·시간 표시)</strong>만 인정됩니다.</span>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-back" id="btn2-back">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          이전
+        </button>
+        <button class="btn btn-primary" id="btn2-submit">제출하기</button>
+      </div>
+      <div class="err-box" id="err2"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SECTION 3 · 팀 인증
+  ═══════════════════════════════════════════ -->
+  <div class="card" id="sec3" style="display:none">
+    <div class="card-top step3">STEP 2 &nbsp;·&nbsp; 팀 인증</div>
+    <div class="card-body">
+      <h2 class="card-title">팀 인증</h2>
+
+      <div class="notice info">
+        <span class="notice-icon">📌</span>
+        <div>
+          <strong>팀 인증샷은 모임 참여자 중 '대표자 1인만' 제출해 주시기 바랍니다.</strong><br>
+          한 명만 제출해도 팀원 모두 인정되니 중복 제출하지 않도록 주의해 주세요!
+        </div>
+      </div>
+
+      <!-- Q7. 제출하는 팀 명 -->
+      <div class="fg">
+        <div class="fg-label">
+          <span class="q-badge team-badge">7</span>
+          제출하는 팀 명 <span class="req"></span>
+        </div>
+        <div class="sel-wrap">
+          <select class="f-select" id="f-certteam">
+            <option value="">-- 팀을 선택하세요 --</option>
+            <option>1팀</option><option>2팀</option><option>3팀</option>
+            <option>4팀</option><option>5팀</option><option>6팀</option>
+            <option>7팀</option><option>8팀</option><option>9팀</option>
+            <option>10팀</option>
+            <option>K231 1팀</option><option>K231 2팀</option><option>K231 3팀</option>
+          </select>
+          <svg class="sel-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+
+      <!-- Q8. 팀 인증샷 업로드 -->
+      <div class="fg">
+        <div class="fg-label">
+          <span class="q-badge team-badge">8</span>
+          3인 이상 팀 인증샷 업로드 <span class="req"></span>
+        </div>
+        <div class="upload-zone" id="uz3">
+          <input type="file" id="uf3" accept="image/*">
+          <div class="upload-ico">📷</div>
+          <div class="upload-lbl">사진을 클릭하거나 드래그해서 업로드</div>
+          <div class="upload-hint">JPG · PNG · HEIC / 최대 20MB</div>
+        </div>
+        <div class="preview-wrap" id="pw3">
+          <img id="pi3" src="" alt="미리보기">
+          <button type="button" class="rm-btn" id="rb3">✕</button>
+        </div>
+        <div class="notice hint">
+          <span class="notice-icon">📸</span>
+          <span>모든 인증샷은 당일 촬영한 <strong>타임스탬프 사진(날짜·시간 표시)</strong>만 인정됩니다.</span>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-back" id="btn3-back">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          이전
+        </button>
+        <button class="btn btn-team-submit" id="btn3-submit">제출하기</button>
+      </div>
+      <div class="err-box" id="err3"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SUCCESS SCREEN
+  ═══════════════════════════════════════════ -->
+  <div class="card" id="sec-ok" style="display:none">
+    <div class="success-wrap">
+      <div class="success-icon">✅</div>
+      <h2 class="success-title">제출 완료!</h2>
+      <p class="success-desc">
+        인증이 성공적으로 제출되었습니다.<br>
+        참여해 주셔서 감사합니다 🎉
+      </p>
+      <div class="summary" id="summary-box"></div>
+      <button class="btn btn-primary" id="btn-reset" style="width:100%">
+        새로 제출하기
+      </button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// =====================================================
+// ▼▼▼ Google Apps Script 웹 앱 배포 URL을 입력하세요 ▼▼▼
+// =====================================================
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwSRo7_PzT7HLKpg0TaM_54Cc9hqNNFn1JuNY2_p9WCHUgyQcVUUBXf-5AyIEnGnSsu3Q/exec';
+// =====================================================
+
+/* ── 공유 상태 ─────────────────────────────────────── */
+const S = { name:'', empId:'', myTeam:'', certType:'', certItem:'', certTeam:'', file2:null, file3:null };
+
+/* ── 섹션 전환 ─────────────────────────────────────── */
+const allSecs = ['sec1','sec2','sec3','sec-ok'];
+function show(id) {
+  allSecs.forEach(s => {
+    const el = document.getElementById(s);
+    el.style.display = s===id ? 'block' : 'none';
+    if (s===id) { el.style.animation='none'; el.offsetHeight; el.style.animation=''; }
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── 스텝바 ────────────────────────────────────────── */
+function setStep(n, lbl2) {
+  const bar = document.getElementById('stepBar');
+  bar.style.display = n==='hide' ? 'none' : 'flex';
+  if (n==='hide') return;
+  if (lbl2) document.getElementById('sl2').textContent = lbl2;
+  document.getElementById('si1').className = n===1 ? 'step-item active' : 'step-item done';
+  document.getElementById('sc1').textContent = n===1 ? '1' : '✓';
+  document.getElementById('si2').className = n===2 ? 'step-item active' : 'step-item';
+  document.getElementById('sconn').className = n===2 ? 'step-connector done' : 'step-connector';
+}
+
+/* ── 라디오 카드 클릭 처리 ─────────────────────────── */
+function bindRadioCards(cardIds, selClass) {
+  cardIds.forEach(id => {
+    const card = document.getElementById(id);
+    card.addEventListener('click', () => {
+      cardIds.forEach(cid => {
+        document.getElementById(cid).classList.remove('sel', 'sel-team');
+      });
+      card.classList.add(selClass);
+      card.querySelector('input[type="radio"]').checked = true;
+    });
+  });
+}
+bindRadioCards(['rc-personal','rc-team'], 'sel');
+bindRadioCards(['rc-diet','rc-exercise'], 'sel');
+
+/* ── 파일 업로드 공통 셋업 ─────────────────────────── */
+function bindUpload({ zoneId, fileId, pwId, piId, rbId, teamMode, onFile }) {
+  const zone = document.getElementById(zoneId);
+  const fi   = document.getElementById(fileId);
+  const pw   = document.getElementById(pwId);
+  const pi   = document.getElementById(piId);
+  const rb   = document.getElementById(rbId);
+  const hoverClass = teamMode ? 'over-team' : 'over';
+
+  fi.addEventListener('change', e => { if (e.target.files[0]) handle(e.target.files[0]); });
+  zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add(hoverClass); });
+  zone.addEventListener('dragleave', ()  => zone.classList.remove(hoverClass));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove(hoverClass);
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith('image/')) handle(f);
+  });
+  rb.addEventListener('click', () => {
+    fi.value=''; pi.src='';
+    pw.style.display='none'; zone.style.display='block';
+    onFile(null);
+  });
+
+  function handle(file) {
+    if (file.size > 20*1024*1024) { alert('파일 크기가 20MB를 초과합니다.'); return; }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      pi.src = ev.target.result;
+      pw.style.display='block'; zone.style.display='none';
+    };
+    reader.readAsDataURL(file);
+    onFile(file);
+  }
+}
+
+bindUpload({ zoneId:'uz2', fileId:'uf2', pwId:'pw2', piId:'pi2', rbId:'rb2', teamMode:false, onFile: f => S.file2=f });
+bindUpload({ zoneId:'uz3', fileId:'uf3', pwId:'pw3', piId:'pi3', rbId:'rb3', teamMode:true,  onFile: f => S.file3=f });
+
+/* ── 에러 표시 ─────────────────────────────────────── */
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = 'block';
+  el.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+function hideErr(id) { document.getElementById(id).style.display='none'; }
+
+/* ── SECTION 1 → 다음 ─────────────────────────────── */
+document.getElementById('btn-next').addEventListener('click', () => {
+  hideErr('err1');
+  const name     = document.getElementById('f-name').value.trim();
+  const empId    = document.getElementById('f-empid').value.trim();
+  const myTeam   = document.getElementById('f-myteam').value;
+  const certType = document.querySelector('input[name="certtype"]:checked')?.value;
+
+  if (!name)     return showErr('err1', '이름을 입력해 주세요.');
+  if (!empId)    return showErr('err1', '사번을 입력해 주세요.');
+  if (!myTeam)   return showErr('err1', '소속 팀을 선택해 주세요.');
+  if (!certType) return showErr('err1', '인증 종류를 선택해 주세요.');
+
+  Object.assign(S, { name, empId, myTeam, certType });
+
+  if (certType === '개인 인증') {
+    setStep(2, '개인 인증'); show('sec2');
+  } else {
+    setStep(2, '팀 인증'); show('sec3');
+  }
+});
+
+/* ── 이전 버튼 ─────────────────────────────────────── */
+document.getElementById('btn2-back').addEventListener('click', () => { setStep(1); show('sec1'); });
+document.getElementById('btn3-back').addEventListener('click', () => { setStep(1); show('sec1'); });
+
+/* ── base64 변환 ───────────────────────────────────── */
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result); r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+/* ── fetch no-cors 제출 ────────────────────────────── */
+function submitViaIframe(payload) {
+  const body = new URLSearchParams({ payload: JSON.stringify(payload) });
+  return fetch(GAS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString()
+  });
+}
+
+/* ── 제출 공통 로직 ────────────────────────────────── */
+async function submitForm({ payload, btnId, errId }) {
+  const btn = document.getElementById(btnId);
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> 제출 중...';
+
+  try {
+    await submitViaIframe(payload);
+    showSuccess(payload.certType);
+  } catch (e) {
+    showErr(errId, '제출 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '제출하기';
+  }
+}
+
+/* ── SECTION 2 제출 ────────────────────────────────── */
+document.getElementById('btn2-submit').addEventListener('click', async () => {
+  hideErr('err2');
+  const certItem = document.querySelector('input[name="certitem"]:checked')?.value;
+  if (!certItem) return showErr('err2', '인증 항목을 선택해 주세요.');
+  if (!S.file2)  return showErr('err2', '인증샷을 업로드해 주세요.');
+
+  S.certItem = certItem;
+  const b64 = await toBase64(S.file2);
+  await submitForm({
+    payload: {
+      certType: '개인 인증',
+      name: S.name, empId: S.empId, myTeam: S.myTeam,
+      certItem: S.certItem, teamName: '',
+      fileName: S.file2.name, mimeType: S.file2.type || 'image/jpeg',
+      photo: b64.split(',')[1]
+    },
+    btnId: 'btn2-submit', errId: 'err2'
+  });
+});
+
+/* ── SECTION 3 제출 ────────────────────────────────── */
+document.getElementById('btn3-submit').addEventListener('click', async () => {
+  hideErr('err3');
+  const certTeam = document.getElementById('f-certteam').value;
+  if (!certTeam) return showErr('err3', '팀 명을 선택해 주세요.');
+  if (!S.file3)  return showErr('err3', '팀 인증샷을 업로드해 주세요.');
+
+  S.certTeam = certTeam;
+  const b64 = await toBase64(S.file3);
+  await submitForm({
+    payload: {
+      certType: '팀 인증',
+      name: S.name, empId: S.empId, myTeam: S.myTeam,
+      certItem: '', teamName: S.certTeam,
+      fileName: S.file3.name, mimeType: S.file3.type || 'image/jpeg',
+      photo: b64.split(',')[1]
+    },
+    btnId: 'btn3-submit', errId: 'err3'
+  });
+});
+
+/* ── 성공 화면 렌더링 ───────────────────────────────── */
+function showSuccess(type) {
+  const isPersonal = type === '개인 인증';
+  const rows = [
+    ['이름',    S.name],
+    ['사번',    S.empId],
+    ['소속팀',  S.myTeam],
+    ['인증유형', type],
+    isPersonal ? ['인증항목', S.certItem] : ['인증팀명', S.certTeam]
+  ];
+  document.getElementById('summary-box').innerHTML =
+    rows.map(([k,v]) => `<div class="summary-row"><span class="s-key">${k}</span><span class="s-val">${v}</span></div>`).join('');
+  setStep('hide'); show('sec-ok');
+}
+
+/* ── 리셋 ───────────────────────────────────────────── */
+document.getElementById('btn-reset').addEventListener('click', () => {
+  ['f-name','f-empid'].forEach(id => document.getElementById(id).value = '');
+  ['f-myteam','f-certteam'].forEach(id => document.getElementById(id).value = '');
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('sel','sel-team'));
+
+  ['2','3'].forEach(n => {
+    document.getElementById(`uf${n}`).value = '';
+    document.getElementById(`pi${n}`).src = '';
+    document.getElementById(`pw${n}`).style.display = 'none';
+    document.getElementById(`uz${n}`).style.display = 'block';
+  });
+
+  Object.assign(S, { name:'', empId:'', myTeam:'', certType:'', certItem:'', certTeam:'', file2:null, file3:null });
+  setStep(1); show('sec1');
+});
+</script>
+
+</body>
+</html>
